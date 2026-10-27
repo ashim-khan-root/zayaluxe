@@ -1,0 +1,100 @@
+# Production stack — single EC2 host, Docker Compose, Caddy for TLS (ADR-010).
+#
+# SKELETON. Do not deploy until the Phase 5 gate is signed (phases.md). Every value comes
+# from the host environment / secret manager; nothing is committed.
+#
+# Host firewall: 80/443 reachable only from Cloudflare IP ranges; SSH only from an admin
+# IP or Cloudflare Tunnel. Postgres/Redis/Meilisearch are never published.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "noeviction"]
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.12
+    restart: always
+    environment:
+      MEILI_ENV: production
+      MEILI_MASTER_KEY: ${MEILISEARCH_API_KEY:?set MEILISEARCH_API_KEY}
+      MEILI_NO_ANALYTICS: "true"
+    volumes:
+      - meilidata:/meili_data
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:7700/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    image: ${BACKEND_IMAGE:?set BACKEND_IMAGE (GHCR tag by git SHA)}
+    restart: always
+    env_file: [backend.env]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    expose: ["9000"]
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:9000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  storefront:
+    image: ${STOREFRONT_IMAGE:?set STOREFRONT_IMAGE (GHCR tag by git SHA)}
+    restart: always
+    env_file: [storefront.env]
+    depends_on:
+      backend: { condition: service_started }
+    expose: ["8000"]
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--spider", "http://localhost:8000/en"]
+      interval: 15s
+      timeout: 5s
+      retries: 6
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddydata:/data
+      - caddyconfig:/config
+    depends_on: [storefront, backend]
+
+volumes:
+  pgdata:
+  redisdata:
+  meilidata:
+  caddydata:
+  caddyconfig:

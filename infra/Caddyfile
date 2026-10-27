@@ -1,0 +1,44 @@
+# Caddy — automatic TLS, one host, three hostnames (architecture.md §4)
+#
+# Cloudflare terminates the public edge; Caddy talks to the origin. Only these hostnames
+# reach the origin, and the security group restricts source IPs to Cloudflare ranges.
+
+{
+	email ops@zayaluxe.co
+	servers {
+		protocols h1 h2
+	}
+}
+
+# ── Storefront ────────────────────────────────────────────────
+zayaluxe.co, www.zayaluxe.co {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+	reverse_proxy storefront:8000
+}
+
+# ── Store API ─────────────────────────────────────────────────
+api.zayaluxe.co {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		-Server
+	}
+	# CORS is enforced by Medusa against STORE_CORS; do not add permissive headers here.
+	reverse_proxy backend:9000
+}
+
+# ── Admin (also gated by Cloudflare Access — defense in depth) ─
+admin.zayaluxe.co {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Frame-Options "DENY"
+		-Server
+	}
+	reverse_proxy backend:9000
+}

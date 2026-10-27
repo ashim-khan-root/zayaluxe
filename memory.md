@@ -1,9 +1,11 @@
 # Zaya Luxe — Project Memory
 
-**Last updated:** 2026-10-26 (v1.2 — gateway timing)
-**Current phase:** Phase 0 — Discovery and decisions (`PENDING`)
+**Last updated:** 2026-10-26 (v1.3 — monorepo scaffold)
+**Current phase:** Phase 0 — Discovery and decisions (`PENDING`) · Phase 1 scaffold
+built ahead of the gate at client request
 **Next action:** Client names a provisional primary + fallback gateway; final choice by
-week 3. Run the Phase 0 workshop.
+week 3. Run the Phase 0 workshop. Decide the visual direction (design.md vs
+copy-design.md) before any component work. Run `npm install` to create the lockfile.
 
 > Session start rule: read this file first, then `phases.md`, then resume from the
 > current phase. Do not re-plan work that is already decided here.
@@ -20,9 +22,9 @@ week 3. Run the Phase 0 workshop.
 | Future markets | India, GCC, others — **deferred** until Qatar is proven |
 | Payments | Online gateway (**client selects**) + **COD** |
 | Platform | Medusa v2 + Next.js 16 |
-| Repo location | `projects/zayaluxe/` (docs); app code created in Phase 1 |
+| Repo location | `zayaluxe/` in `ai-worker` — clone of `github.com/ashim-khan-root/zayaluxe` (docs + scaffold). Ignored by the parent repo (`.gitignore`). |
 | Launch target | End of week 9 after Phase 0 sign-off |
-| Status | Plan v1.1 drafted; no code started; no infrastructure provisioned |
+| Status | Plan v1.3 + monorepo scaffold (dirs, manifests, configs, COD-free seed). **No dependencies installed, no lockfile, no infrastructure, no code beyond the shell.** |
 
 ---
 
@@ -44,6 +46,9 @@ week 3. Run the Phase 0 workshop.
 | 2026-10-26 | Metadata attribute sets for v1 (no custom PIM) | Smallest thing that proves the model; graduate later if needed | Proposed |
 | 2026-10-26 | MDX editorial, no CMS at launch | Avoids a second system before self-serve is proven | Proposed |
 | 2026-10-26 | English slugs + Arabic titles | Lower maintenance; revisit after SEO testing | Proposed |
+| 2026-10-26 | **Monorepo scaffold built before Gate 0**, at client request | Client wants the structure in place; no infrastructure, no deploy, no client data. Gate 0 evidence still required before Phase 1 is "done". | **Decided (client request)** |
+| 2026-10-26 | npm workspaces as the package manager | npm 11 is already on the machine; no extra toolchain. Revisit only if workspace hoisting causes Medusa/Next conflicts. | Proposed |
+| 2026-10-26 | Design tokens follow `design.md`, not `copy-design.md` | `design.md` carries contrast ratios and accessibility maths; the client's extracted Macys-style brief (dark, #E01A2B, very rounded) contradicts "quiet luxury, sharp edges, no neon". **Unresolved — needs a client decision.** | **Open** |
 
 **"Proposed" means not signed. Do not build against it until Phase 0 is signed.**
 
@@ -86,9 +91,20 @@ week 3. Run the Phase 0 workshop.
       online payments**, **client selects gateway**, client company is registered.
 - [x] 2026-10-26 — Gateway timing relaxed: **provisional primary by week 1, final choice
       by week 3**; development can start on a stub provider.
+- [x] 2026-10-26 — **Cloned the repo into `zayaluxe/`** and built the Phase 1 monorepo
+      scaffold: `apps/backend` (Medusa), `apps/storefront` (Next.js 16 App Router en/ar),
+      `packages/{types,config,ui}`, `infra/` (compose + Caddy + backup/restore/smoke
+      scripts), `.github/workflows/ci.yml`, `docs/{adr,runbooks}`.
+- [x] 2026-10-26 — Wrote the category-attribute contract (`packages/types/src/catalog.ts`)
+      with Zod validation + search-facet flattening, and integer-minor-unit money
+      (`money.ts`), each with unit tests.
+- [x] 2026-10-26 — Verified package versions against the npm registry before pinning
+      (Medusa 2.22.1 not 2.18.x, Next 16.4.3, React 19.3.1, Tailwind 4.3.3, TypeScript 5.9.3).
 - [ ] Phase 0 workshop — not scheduled.
 - [ ] Gateway selected / KYC started — pending client.
-- [ ] Any code or infrastructure — deliberately not started (lifecycle gate).
+- [ ] `npm install` + lockfile — **not run**. A `--package-lock-only` resolve timed out at
+      10 minutes; treat the manifests as unproven until a real install succeeds.
+- [ ] Any infrastructure or deploy — deliberately not started (lifecycle gate).
 
 ---
 
@@ -114,6 +130,9 @@ week 3. Run the Phase 0 workshop.
 | COD operating rules undefined | Cannot implement verification/caps/reconciliation | Default policy proposed; client approves | Client |
 | Brand assets absent | Design stays provisional | Use proposed direction for structure only | Client |
 | Product content absent | Catalog/search QA blocked | Seed with 5 internal test products | Us |
+| Design direction unresolved (`design.md` vs `copy-design.md`) | Every component would be built against the wrong palette/shape | Tokens written for `design.md`; `packages/ui` deliberately exports nothing until decided | Client |
+| No lockfile / dependencies not installed | CI (`npm ci`) cannot pass; nothing is runnable yet | Run `npm install` once, commit `package-lock.json` | Us |
+| Docker not installed on the dev machine | Postgres/Redis/Meilisearch cannot boot locally; no migration or seed test | Install Docker Desktop or point at a hosted dev DB | Us |
 
 ---
 
@@ -147,10 +166,39 @@ week 3. Run the Phase 0 workshop.
   "not just garments" requirement is an architecture constraint, not a content one.
 - **2026-10-26 — Hosted payment pages are the cheapest compliance win.** SAQ A vs SAQ D
   is a large difference in audit scope and engineering time.
+- **2026-10-26 — Verify versions against the registry, not the plan.** The docs said
+  Medusa 2.18.x; the registry said 2.22.1. Pinning a stale version into four manifests is
+  a silent future upgrade fight.
+- **2026-10-26 — A scaffold is not a build.** Nothing installs, migrates, seeds or
+  renders until `npm install` succeeds. Do not report the stack as "set up" on the
+  strength of a directory tree.
+- **2026-10-26 — Don't build UI against an unresolved palette.** `copy-design.md` and
+  `design.md` describe opposite brands. `packages/ui` stays empty until the client picks.
 
 ---
 
 ## 9. Session log
+
+### 2026-10-26 — v1.3 monorepo scaffold
+- Cloned `github.com/ashim-khan-root/zayaluxe` into `zayaluxe/` (the directory already
+  held `copy-design.md`; cloned to temp and merged, file preserved).
+- Built the `architecture.md` §3 tree: `apps/backend`, `apps/storefront`,
+  `packages/{types,config,ui}`, `infra/`, `docs/{adr,runbooks}`, `.github/workflows/`.
+- Backend: Medusa manifests, `medusa-config.ts`, `jest.config.js`, Qatar region seed
+  script, `src/` layout README. Production module wiring (Redis/R2/COD) is documented
+  but commented out rather than shipped unverified.
+- Storefront: Next 16 App Router with `next-intl` (`/en`, `/ar`, RTL), design tokens in
+  `globals.css`, bilingual message catalogues, scaffold home page that states its own
+  build state. No fake marketing copy, no lorem ipsum.
+- Shared: attribute-set contract + Zod validation + Meilisearch facet flattening,
+  integer-minor-unit money helpers, both unit-tested; Tailwind brand preset.
+- Infra: local compose (Postgres 16 / Redis 7 / Meilisearch), production compose
+  skeleton, Caddyfile, backup/restore/smoke scripts, CI with secret scan + audit.
+- Verified 14 JSON manifests parse; every package version checked against the registry.
+- **Not done:** `npm install`, lockfile, migrations, seed run, render check, Docker
+  (not installed on this machine). Nothing was committed or pushed.
+- **Next:** client decides design direction; `npm install`; install Docker; Phase 0
+  workshop and gateway choice.
 
 ### 2026-10-26 — v1.2 gateway timing
 - Client asked whether the gateway can be chosen later.
@@ -187,3 +235,4 @@ week 3. Run the Phase 0 workshop.
 | 2026-10-26 | v1.0 — initial plan | Agent |
 | 2026-10-26 | v1.1 — Qatar-only launch, COD + online, client selects gateway, `payments.md` added | Agent |
 | 2026-10-26 | v1.2 — gateway timing: provisional primary week 1, final choice week 3 | Agent |
+| 2026-10-26 | v1.3 — monorepo scaffold (apps, packages, infra, CI, docs); design direction flagged | Agent |

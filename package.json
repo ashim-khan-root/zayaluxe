@@ -1,0 +1,39 @@
+{
+  "name": "zayaluxe",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Zaya Luxe — bilingual (EN/AR) luxury commerce platform. Medusa v2 + Next.js.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "packageManager": "npm@11.17.0",
+  "scripts": {
+    "dev": "concurrently -n backend,storefront -c blue,magenta \"npm:dev:backend\" \"npm:dev:storefront\"",
+    "dev:backend": "npm run dev --workspace @zayaluxe/backend",
+    "dev:storefront": "npm run dev --workspace @zayaluxe/storefront",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "infra:up": "docker compose -f infra/docker-compose.yml up -d",
+    "infra:down": "docker compose -f infra/docker-compose.yml down",
+    "infra:logs": "docker compose -f infra/docker-compose.yml logs -f",
+    "db:migrate": "npm run db:migrate --workspace @zayaluxe/backend",
+    "db:seed": "npm run seed --workspace @zayaluxe/backend"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "concurrently": "10.0.6",
+    "eslint": "10.13.0",
+    "globals": "17.13.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0"
+  }
+}

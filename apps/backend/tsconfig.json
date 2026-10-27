@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "rootDir": ".",
+    "noEmit": true,
+    "types": ["node", "jest"]
+  },
+  "include": ["src/**/*", "medusa-config.ts", "jest.config.js"],
+  "exclude": ["node_modules", "dist", ".medusa"]
+}

@@ -1,0 +1,30 @@
+{
+  "meta": {
+    "brand": "Zaya Luxe",
+    "title": "Zaya Luxe",
+    "description": "A bilingual luxury storefront for Qatar — Arabic and English, online payment and cash on delivery."
+  },
+  "home": {
+    "eyebrow": "Qatar · QAR",
+    "title": "A quiet luxury storefront, built to last.",
+    "body": "This is the project shell: bilingual routing, design tokens and the commerce backend are wired together. Catalogue, checkout and payment content arrive once Phase 0 is signed off.",
+    "marketLabel": "Market",
+    "marketValue": "Qatar only",
+    "stackLabel": "Stack",
+    "stackValue": "Medusa v2 · Next.js 16",
+    "phaseLabel": "Phase",
+    "phaseValue": "Foundation",
+    "note": "Scaffold build — not a live store. Do not present this as a storefront."
+  },
+  "common": {
+    "skipToContent": "Skip to content",
+    "loading": "Loading",
+    "retry": "Try again",
+    "close": "Close",
+    "menu": "Menu",
+    "search": "Search",
+    "account": "Account",
+    "cart": "Cart",
+    "language": "Language"
+  }
+}

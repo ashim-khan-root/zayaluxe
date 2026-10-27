@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.next/
+.medusa/
+build/
+coverage/
+package-lock.json
+*.md

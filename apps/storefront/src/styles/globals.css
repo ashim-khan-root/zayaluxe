@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+/**
+ * Design tokens — design.md §2–4 (provisional direction).
+ *
+ * OPEN QUESTION: the client's `copy-design.md` asks for a "vibrant · modern" dark system
+ * (black surface, #E01A2B accent, very rounded, soft elevation). That directly contradicts
+ * design.md's "quiet luxury, warm, sharp edges, no neon". These tokens follow design.md
+ * because it is the document with contrast ratios and accessibility maths. Resolve the
+ * direction before any visual work is called final (design.md §11).
+ */
+
+:root {
+  --ink: #14110f;
+  --ink-soft: #3a342e;
+  --muted: #5c554c;
+  --ivory: #f7f3ec;
+  --sand: #e6dccb;
+  --line: #d8cdbc;
+  --gold: #b08d57; /* decorative only — 2.4:1, never text */
+  --gold-text: #7a5a2e;
+  --clay: #9a5b45;
+  --success: #2f6b4f;
+  --error: #a33a2b;
+  --white: #ffffff;
+
+  /* Spacing scale (design.md §4) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* Motion (design.md §4) */
+  --motion-hover: 150ms;
+  --motion-panel: 250ms;
+
+  /* One shared shadow, modals only (design.md §4) */
+  --shadow-modal: 0 24px 64px rgb(20 17 15 / 0.18);
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-muted: var(--muted);
+  --color-ivory: var(--ivory);
+  --color-sand: var(--sand);
+  --color-line: var(--line);
+  --color-gold: var(--gold);
+  --color-gold-text: var(--gold-text);
+  --color-clay: var(--clay);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-white: var(--white);
+
+  --font-display: var(--font-display-latin), var(--font-display-arabic), Georgia, serif;
+  --font-body: var(--font-body-latin), var(--font-body-arabic), system-ui, sans-serif;
+
+  /* Sharp edges read more luxury than rounded cards (design.md §4) */
+  --radius-none: 0;
+  --radius-input: 2px;
+}
+
+@layer base {
+  html {
+    /* Arabic needs a taller line box and no negative tracking (design.md §3) */
+    line-height: 1.6;
+    scroll-behavior: smooth;
+  }
+
+  html[dir="rtl"] {
+    line-height: 1.85;
+  }
+
+  html[lang="ar"] body {
+    font-family: var(--font-body-arabic), system-ui, sans-serif;
+    font-size: 1.0625rem; /* +1px on the Latin role */
+    letter-spacing: normal;
+  }
+
+  body {
+    font-family: var(--font-body);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+  }
+
+  /* Focus ring is visible on every surface — never outline:none without a replacement
+     (rules.md §9) */
+  :focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--sand);
+    color: var(--ink);
+  }
+
+  /* Numerals are tabular wherever prices and quantities align (design.md §3) */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
